@@ -4,12 +4,55 @@
 <head>
 	
 	<meta charset="utf-8">
+
+	<style type="text/css">
+
+		body {
+			font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+			font-size: 1.2em;
+			transition: background-color 500ms ease-out;
+				-webkit-transition: background-color 500ms ease-out;
+    				-moz-transition: background-color 500ms ease-out;
+    					-o-transition: background-color 500ms ease-out;
+		}
+
+		.box {
+			left: 50%;
+			position: absolute;
+			text-align: center; 
+			top: 50%;
+			transform: translate(-50%, -50%);
+				-webkit-transform: translate(-50%, -50%);
+					-moz-transform: translate(-50%, -50%);
+						-o-transform: translate(-50%, -50%);
+		}
+
+		.time,
+		.announcement {
+			color: #fff;
+		}
+
+		.time {
+			letter-spacing: 0.09em;
+			text-transform: uppercase;
+		}
+
+		.announcement {
+			font-weight: normal;
+		}
+
+	</style>
 	
 </head>
 
 <body> 
 
-	<h1 id="time"></h1>
+	<div class="box">
+
+		<h1 id="js-time" class="time"></h1>
+		<h2 id="js-announcement" class="announcement"></h2>
+
+	</div>
 	
 	<script src="script.js"></script>
 
