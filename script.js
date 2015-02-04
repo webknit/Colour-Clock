@@ -40,7 +40,7 @@ ColorClock.changeBgColour = function(hour, min, sec) {
 }
 
 // An object with the statuses
-var statuses = {
+ColorClock.statuses = {
 	weekend: 'What are you doing here? It\'s the weekend',
 	dinnerTime: 'It\'s dinner time!!',
 	homeTime: 'It\'s hometime, get yourself home!',
@@ -49,7 +49,7 @@ var statuses = {
 };
 
 // The rules for the status output
-var cases = [
+ColorClock.cases = [
 	/*
 		EXAMPLE 
 		{ value: 'day', equals: [0, 6], status: statuses.weekend }
@@ -58,45 +58,45 @@ var cases = [
 		equals(array) = if the day/hour is exactly equal to, can add multiple items
 		lowerLimit = the lower limit eg start at 1pm = 13
 		upperLimit = the higher limit eg to finish at 2pm = 14
-		status = If soemthing is true what status should be returned
+		status = If something is true what status should be returned
 	*/
 	/*
 		MULTIPLE EXAMPLE
-		In this example we two things, they both need to be true in order to return a status
+		In this example we compare two cases, they both need to be true in order to return a status
 		e.g At 9am-10am on Monday we want to output "hope you've had a good weekend"
 		[
 			{ value: 'secs', lowerLimit: 20, upperLimit: 30, status: statuses.homeTime },
 			{ value: 'day', equals: [3, 5], status: statuses.homeTime }
 		]
 	*/
-	{ value: 'day', equals: [0, 6], status: statuses.weekend },
-	{ value: 'hour', lowerLimit: 12, upperLimit: 13, status: statuses.dinnerTime },
-	{ value: 'hour', lowerLimit: 10, upperLimit: 12, status: statuses.goodWeekend },
-	{ value: 'hour', lowerLimit: 17, upperLimit: 23, status: statuses.homeTime },
+	{ value: 'day', equals: [0, 6], status: ColorClock.statuses.weekend },
+	{ value: 'hour', lowerLimit: 12, upperLimit: 13, status: ColorClock.statuses.dinnerTime },
+	{ value: 'hour', lowerLimit: 10, upperLimit: 12, status: ColorClock.statuses.goodWeekend },
+	{ value: 'hour', lowerLimit: 17, upperLimit: 23, status: ColorClock.statuses.homeTime },
 	[ 
-		{ value: 'hour', lowerLimit: 7, upperLimit: 12, status: statuses.goodWeekend },
-		{ value: 'day', equals: [1], status: statuses.goodWeekend }
+		{ value: 'hour', lowerLimit: 7, upperLimit: 12, status: ColorClock.statuses.goodWeekend },
+		{ value: 'day', equals: [1], status: ColorClock.statuses.goodWeekend }
 	]
 ];
 
 // Function to handle the multicase
 ColorClock.handleMultiCase = function(currentCases) {
 
-	var status = statuses.default;
+	var status = this.statuses.default;
 
 	// Run through the case array object 
 	// e.g length == 2 and we count down until nothing left
 	for (var i = currentCases.length - 1; i >= 0; i--) {
 
-		// Run the normal single case function ont he first object in array
+		// Run the normal single case function on the current object in the array
 		var currentStatus = this.getStatus(currentCases[i]);
 
 		console.log('currentStatus ' + currentStatus);
 
 		// Check if it returns without a match
-		// If there's no match then the other one isn't going to be true 
+		// We drop out because we want the multiple case only to return if all of them match 
 		// so we can return the default value
-		if(currentStatus === statuses.default) return statuses.default;
+		if(currentStatus === this.statuses.default) return this.statuses.default;
 
 		// If it's not the default we have a match and can run the next 
 		// rule to ensure that's true
@@ -197,19 +197,19 @@ ColorClock.getStatus = function(currentCase) {
 	}
 
 	// If nothing matches then we just return the default
-	return statuses.default;
+	return this.statuses.default;
 
 };
 
 ColorClock.checkText = function() {
 
 	// Reset the status to the default one
-	var status = statuses.default;
+	var status = this.statuses.default;
 
 	// Loop through the cases.length
-	for (var i = 0; i < cases.length; i++) {
+	for (var i = 0; i < this.cases.length; i++) {
 
-		var currentCase = cases[i];
+		var currentCase = this.cases[i];
 
 		// Check if current object is an array so we can handle multiple cases
 		if(Object.prototype.toString.call(currentCase) === '[object Array]') {
@@ -226,7 +226,7 @@ ColorClock.checkText = function() {
 		}
 
 		// Drop out of loop because we have a match
-		if(status !== statuses.default) {
+		if(status !== this.statuses.default) {
 		
 			break;
 
