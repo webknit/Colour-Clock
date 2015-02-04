@@ -69,6 +69,10 @@ var cases = [
 			{ value: 'day', equals: [3, 5], status: statuses.homeTime }
 		]
 	*/
+	[
+		{ value: 'secs', lowerLimit: 20, upperLimit: 30, status: statuses.homeTime },
+		{ value: 'day', equals: [3, 5], status: statuses.homeTime }
+	],
 	{ value: 'day', equals: [0, 6], status: statuses.weekend },
 	{ value: 'hour', lowerLimit: 12, upperLimit: 13, status: statuses.dinnerTime },
 	{ value: 'hour', lowerLimit: 10, upperLimit: 12, status: statuses.goodWeekend },
@@ -79,20 +83,32 @@ var cases = [
 	]
 ];
 
+// Function to handle the multicase
 ColorClock.handleMultiCase = function(currentCases) {
 
 	var status = statuses.default;
 
+	// Run through the case array object 
+	// e.g length == 2 and we count down until nothing left
 	for (var i = currentCases.length - 1; i >= 0; i--) {
 
-		// Run the normal single case function
+		// Run the normal single case function ont he first object in array
 		var currentStatus = this.getStatus(currentCases[i]);
+
+		console.log('currentStatus ' + currentStatus);
+
 		// Check if it returns without a match
+		// If there's no match then the other one isn't going to be true 
+		// so we can return the default value
 		if(currentStatus === statuses.default) return statuses.default;
+
+		// If it's not the default we have a match and can run the next 
+		// rule to ensure that's true
      	status = currentStatus;
 
 	};
   	
+  	// Return the required status
   	return currentStatus;
 
 };
@@ -117,31 +133,74 @@ ColorClock.getStatus = function(currentCase) {
 	*/
 
 	// The hasOwnProperty() method returns a boolean indicating whether the object has the specified property.
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty
 	var hasEquals = currentCase.hasOwnProperty('equals');
 	var hasLower = currentCase.hasOwnProperty('lowerLimit');
 	var hasUpper = currentCase.hasOwnProperty('upperLimit');
 
+	// The following are the if statements for the various outcomes
+	// This was a bit mind boggling at first galce
+
+	// If hasEquals == true and hasLower && hasUpper == false
 	if(hasEquals && !hasLower && !hasUpper) {
 
+		/*
+			get the equals array from the currentCase and check if the value exists in that 
+			array (indexOf returns -1 for a non-match as arrays are 0 indexed so if it matched 
+			the first element it would return 0) and if it matches, return the currentCase status property
+		*/
 		if(currentCase.equals.indexOf(value) !== -1) return currentCase.status;
 
 	} 
 
+	// If we've got a equals and a lower but no upper
 	else if(hasEquals && hasLower && !hasUpper) {
 
+		// If it's in the array and >= the value we defined above
 		if(currentCase.equals.indexOf(value) !== -1 && value >= currentCase.lowerLimit) return currentCase.status;
-	} else if(hasEquals && !hasLower && hasUpper) {
+	
+	} 
+
+	// If we've got an equals and an upper
+	else if(hasEquals && !hasLower && hasUpper) {
+
+		// If it's in the array and < the value we defined above
 		if(currentCase.equals.indexOf(value) !== -1 && value < currentCase.upperLimit) return currentCase.status;
-	} else if(hasEquals && hasLower && hasUpper) {
+	
+	} 
+
+	// If we've got an equals and an upper and a lower
+	else if(hasEquals && hasLower && hasUpper) {
+
+		// Check if in the array and that it's >= and < the value
 		if(currentCase.equals.indexOf(value) !== -1 && value >= currentCase.lowerLimit && value < currentCase.upperLimit) return currentCase.status;
-	} else if(!hasEquals && hasLower && !hasUpper) {
+	
+	} 
+
+	// Moving onto the those without equals values
+	// If we only have a lower
+	else if(!hasEquals && hasLower && !hasUpper) {
+
+		// Same as the above but we don't need to check if it's in the array
 		if(value >= currentCase.lowerLimit) return currentCase.status;
-	} else if(!hasEquals && !hasLower && hasUpper) {
+
+	} 
+
+	// These are just repeats of the hasEquals but !hasEquals
+	else if(!hasEquals && !hasLower && hasUpper) {
+
 		if(value < currentCase.upperLimit) return currentCase.status;
-	} else if(!hasEquals && hasLower && hasUpper) {
+
+	} 
+
+	// These are just repeats of the hasEquals but !hasEquals
+	else if(!hasEquals && hasLower && hasUpper) {
+
 		if(value >= currentCase.lowerLimit && value < currentCase.upperLimit) return currentCase.status;
+
 	}
 
+	// If nothing matches then we just return the default
 	return statuses.default;
 
 };
@@ -186,8 +245,10 @@ ColorClock.checkText = function() {
 
 ColorClock.startClock = function() {
 
+	// Make the clock tick each second
 	var interval = setInterval(function() {
 
+		// Call the function
 		ColorClock.countClock()
 
 	},1000);
@@ -200,4 +261,5 @@ ColorClock.startClock = function() {
 
 }
 
+// Start the clock!
 ColorClock.startClock();
