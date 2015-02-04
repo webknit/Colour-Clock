@@ -2,133 +2,184 @@ var ColorClock = ColorClock || {};
 
 ColorClock.getTheTime = function() {
 
+	// Get the date/time information
 	this.today = new Date();
 	this.day = ColorClock.today.getDay();
 	this.hours = ColorClock.today.getHours();
 	this.mins = ColorClock.today.getMinutes(); 
 	this.secs = ColorClock.today.getSeconds();
 
+	// Store the date and time in an object for use later
+	this.values = {
+		day: this.day,
+		hour: this.hours,
+		secs: this.secs
+	};
+
+	// Add zeros onto the time digits to help us change colour
 	if(this.hours < 10) this.hours = '0' + this.hours;
 	if(this.mins < 10) this.mins = '0' + this.mins;
 	if(this.secs < 10) this.secs = '0' + this.secs;
 
-	//console.log('date is ' + this.day + ' time is ' + this.hours + ':' + this.mins + ':' + this.secs);
+	// Output the time
 	document.getElementById('js-time').innerHTML = this.hours + ':' + this.mins + ':' + this.secs ;
 
+	// Change the bg colour based on the time
 	this.changeBgColour(this.hours, this.mins, this.secs);
+
+	// Call the check/change text function
 	this.checkText();
 
-}
+};
 
 ColorClock.changeBgColour = function(hour, min, sec) {
 
+	// Changed the # of the body colur based on the time
 	document.body.style.backgroundColor = '#' + hour + min + sec ;
 
 }
 
-ColorClock.checkText = function() {
+// An object with the statuses
+var statuses = {
+	weekend: 'What are you doing here? It\'s the weekend',
+	dinnerTime: 'It\'s dinner time!!',
+	homeTime: 'It\'s hometime, get yourself home!',
+	goodWeekend: 'Morning everyone! Hope you\'ve had a good weekend',
+	default: ''
+};
 
-	// Jordan
-	// http://codepen.io/anon/pen/PwJROZ
+// The rules for the status output
+var cases = [
+	/*
+		EXAMPLE 
+		{ value: 'day', equals: [0, 6], status: statuses.weekend }
 
-	// Full version
-	// http://codepen.io/anon/pen/GgMxzZ
+		value = What the rule is base on e.g day/hour
+		equals(array) = if the day/hour is exactly equal to, can add multiple items
+		lowerLimit = the lower limit eg start at 1pm = 13
+		upperLimit = the higher limit eg to finish at 2pm = 14
+		status = If soemthing is true what status should be returned
+	*/
+	/*
+		MULTIPLE EXAMPLE
+		In this example we two things, they both need to be true in order to return a status
+		e.g At 9am-10am on Monday we want to output "hope you've had a good weekend"
+		[
+			{ value: 'secs', lowerLimit: 20, upperLimit: 30, status: statuses.homeTime },
+			{ value: 'day', equals: [3, 5], status: statuses.homeTime }
+		]
+	*/
+	{ value: 'day', equals: [0, 6], status: statuses.weekend },
+	{ value: 'hour', lowerLimit: 12, upperLimit: 13, status: statuses.dinnerTime },
+	{ value: 'hour', lowerLimit: 10, upperLimit: 12, status: statuses.goodWeekend },
+	{ value: 'hour', lowerLimit: 17, upperLimit: 23, status: statuses.homeTime },
+	[ 
+		{ value: 'hour', lowerLimit: 7, upperLimit: 12, status: statuses.goodWeekend },
+		{ value: 'day', equals: [1], status: statuses.goodWeekend }
+	]
+];
 
-	var statuses = {
-		weekend: 'What are you doing here? It\'s the weekend',
-		dinnerTime: 'It\'s dinner time!!',
-		homeTime: 'It\'s hometime, get yourself home!',
-		crazy: 'You are one crazy worker!',
-		morning: 'Morning everyone!',
-		morningGoodWeekend: 'Morning everyone! Hope you\'ve had a good weekend!'
+ColorClock.handleMultiCase = function(currentCases) {
+
+	var status = statuses.default;
+
+	for (var i = currentCases.length - 1; i >= 0; i--) {
+
+		// Run the normal single case function
+		var currentStatus = this.getStatus(currentCases[i]);
+		// Check if it returns without a match
+		if(currentStatus === statuses.default) return statuses.default;
+     	status = currentStatus;
+
 	};
+  	
+  	return currentStatus;
 
-	var cases = [
-		{value: 'day', equals: [0, 6], status: statuses.weekend},
-		{value: 'hour', lowerLimit: 12, upperLimit: 13, status: statuses.dinnerTime},
-		{value: 'hour', lowerLimit: 17, upperLimit: 23, status: statuses.homeTime},
-		{value: 'hour', lowerLimit: 16, upperLimit: 18, status: statuses.homeTime}
-	];
+};
 
-	var status;
-	var hour = this.hour;
-	var day = this.day;
+ColorClock.getStatus = function(currentCase) {
 
-	for (var i = 0; i > cases.length; i++) {
+	// this.values refers to the object we created at the top
+	// e.g this.values['day'] would select this.day
+	var value = this.values[currentCase.value];
 
-		var currentCase = cases[i];
-		var value = values[currentCase.value];
+	console.log('value ' + value)
 
-		if(typeof currentCase.equals !== 'undefined') {
+	/*
+		The above code could also be wrote like the following but this isn't as 
+		flexible/maintainable as the code we have used and shoudl be faster with less code bloat
 
-			if(currentCase.equals.indexOf(value)) { 
-
-				status = currentCase.status;
-				console.log(currentCase);
-
-			}
-
+		if(currentCase.value === 'day') {
+			value = this.day;
+		} else if(currentCase.value === 'hour') {
+			value = this.hours;
 		}
+	*/
 
-		else if(value >= currentCase.lowerLimit && value < currentCase.upperLimit) {
+	// The hasOwnProperty() method returns a boolean indicating whether the object has the specified property.
+	var hasEquals = currentCase.hasOwnProperty('equals');
+	var hasLower = currentCase.hasOwnProperty('lowerLimit');
+	var hasUpper = currentCase.hasOwnProperty('upperLimit');
 
-			status = currentCase.status;
-			console.log(currentCase);
+	if(hasEquals && !hasLower && !hasUpper) {
 
-		}
+		if(currentCase.equals.indexOf(value) !== -1) return currentCase.status;
 
-		else {
+	} 
 
-			status = '';
+	else if(hasEquals && hasLower && !hasUpper) {
 
-		}
-
-
-
+		if(currentCase.equals.indexOf(value) !== -1 && value >= currentCase.lowerLimit) return currentCase.status;
+	} else if(hasEquals && !hasLower && hasUpper) {
+		if(currentCase.equals.indexOf(value) !== -1 && value < currentCase.upperLimit) return currentCase.status;
+	} else if(hasEquals && hasLower && hasUpper) {
+		if(currentCase.equals.indexOf(value) !== -1 && value >= currentCase.lowerLimit && value < currentCase.upperLimit) return currentCase.status;
+	} else if(!hasEquals && hasLower && !hasUpper) {
+		if(value >= currentCase.lowerLimit) return currentCase.status;
+	} else if(!hasEquals && !hasLower && hasUpper) {
+		if(value < currentCase.upperLimit) return currentCase.status;
+	} else if(!hasEquals && hasLower && hasUpper) {
+		if(value >= currentCase.lowerLimit && value < currentCase.upperLimit) return currentCase.status;
 	}
 
-	// if(day == 6 || day == 0) {
+	return statuses.default;
 
-	// 	status = statuses.weekend;
+};
 
-	// }
+ColorClock.checkText = function() {
 
-	// else if(hour >= 12 && hour < 13) {
+	// Reset the status to the default one
+	var status = statuses.default;
 
-	// 	status = statuses.dinnerTime;
+	// Loop through the cases.length
+	for (var i = 0; i < cases.length; i++) {
 
-	// }
+		var currentCase = cases[i];
 
-	// else if(hour >= 17 && hour < 23) {
+		// Check if current object is an array so we can handle multiple cases
+		if(Object.prototype.toString.call(currentCase) === '[object Array]') {
 
-	// 	status = statuses.homeTime;
+			status = this.handleMultiCase(currentCase);
 
-	// }
+		} 
 
-	// else if(hour >= 23 && hour < 07) {
+		// Else handle a single case
+		else {
 
-	// 	status = statuses.crazy;
+			status = this.getStatus(currentCase);
 
-	// }
+		}
 
-	// else if(hour >= 07 && hour < 19 && day != 6 && day != 0) {
+		// Drop out of loop because we have a match
+		if(status !== statuses.default) {
+		
+			break;
 
-	// 	status = statuses.morning;
+		}
+	  
+	}
 
-	// }
-
-	// else if(hour >= 07 && hour < 19 && day == 1) {
-
-	// 	status = statuses.morningGoodWeekend;
-
-	// }
-
-	// else {
-
-	// 	status = '';
-
-	// }
-
+	// Stick the status on the page
 	document.getElementById('js-announcement').innerHTML = status
 
 }
