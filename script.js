@@ -28,7 +28,11 @@ ColorClock.changeBgColour = function(hour, min, sec) {
 
 ColorClock.checkText = function() {
 
+	// Jordan
 	// http://codepen.io/anon/pen/PwJROZ
+
+	// Full version
+	// http://codepen.io/anon/pen/GgMxzZ
 
 	var statuses = {
 		weekend: 'What are you doing here? It\'s the weekend',
