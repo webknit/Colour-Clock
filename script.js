@@ -44,6 +44,7 @@ ColorClock.statuses = {
 	weekend: 'What are you doing here? It\'s the weekend',
 	dinnerTime: 'It\'s dinner time!!',
 	homeTime: 'It\'s hometime, get yourself home!',
+	crazyWorker: 'What are you still doing here? You\re crazy!',
 	goodMorning: 'Morning everyone!',
 	goodWeekend: 'Morning everyone! Hope you\'ve had a good weekend',
 	default: ''
@@ -72,8 +73,9 @@ ColorClock.cases = [
 	*/
 	{ value: 'day', equals: [0, 6], status: ColorClock.statuses.weekend },
 	{ value: 'hour', lowerLimit: 12, upperLimit: 13, status: ColorClock.statuses.dinnerTime },
-	{ value: 'hour', lowerLimit: 8, upperLimit: 10, status: ColorClock.statuses.goodMorning },
+	{ value: 'hour', lowerLimit: 8, upperLimit: 12, status: ColorClock.statuses.goodMorning },
 	{ value: 'hour', lowerLimit: 17, upperLimit: 23, status: ColorClock.statuses.homeTime },
+	{ value: 'hour', lowerLimit: 23, upperLimit: 7, status: ColorClock.statuses.crazyWorker },
 	[ 
 		{ value: 'hour', lowerLimit: 7, upperLimit: 12, status: ColorClock.statuses.goodWeekend },
 		{ value: 'day', equals: [1], status: ColorClock.statuses.goodWeekend }
