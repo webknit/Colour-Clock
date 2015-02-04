@@ -69,10 +69,6 @@ var cases = [
 			{ value: 'day', equals: [3, 5], status: statuses.homeTime }
 		]
 	*/
-	[
-		{ value: 'secs', lowerLimit: 20, upperLimit: 30, status: statuses.homeTime },
-		{ value: 'day', equals: [3, 5], status: statuses.homeTime }
-	],
 	{ value: 'day', equals: [0, 6], status: statuses.weekend },
 	{ value: 'hour', lowerLimit: 12, upperLimit: 13, status: statuses.dinnerTime },
 	{ value: 'hour', lowerLimit: 10, upperLimit: 12, status: statuses.goodWeekend },
