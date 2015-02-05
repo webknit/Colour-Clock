@@ -94,7 +94,7 @@ ColorClock.handleMultiCase = function(currentCases) {
 		// Run the normal single case function on the current object in the array
 		var currentStatus = this.getStatus(currentCases[i]);
 
-		console.log('currentStatus ' + currentStatus);
+		//console.log('currentStatus ' + currentStatus);
 
 		// Check if it returns without a match
 		// We drop out because we want the multiple case only to return if all of them match 
@@ -118,7 +118,7 @@ ColorClock.getStatus = function(currentCase) {
 	// e.g this.values['day'] would select this.day
 	var value = this.values[currentCase.value];
 
-	console.log('value ' + value)
+	//console.log('value ' + value)
 
 	/*
 		The above code could also be wrote like the following but this isn't as 
